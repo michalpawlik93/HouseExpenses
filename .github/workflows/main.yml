@@ -18,7 +18,7 @@ jobs:
           dotnet-version: '7.0.x'
         
       - name: Restore
-        run: dotent restore ./HouseExpenses.sln
+        run: dotnet restore ./HouseExpenses.sln
       
       - name: Build
         run: dotnet build ./HouseExpenses.sln --configuration Release --no-restore
