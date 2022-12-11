@@ -14,7 +14,7 @@ app.UseSwaggerUI(options =>
 });
 app.UseHttpsRedirection();
 
-app.MapGet("/", () => TempClass.GetHelloWorld)
+app.MapGet("/GetAllExpenses", () => TempClass.GetHelloWorld)
     .WithName("HelloWorld")
     .WithOpenApi();
 
