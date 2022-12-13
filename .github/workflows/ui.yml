@@ -3,7 +3,9 @@ name: Build & Deploy UI
 on:
   push:
     branches:
-      - 'master/ui/**'
+    - master
+    paths:
+    - 'ui/**'
 
 jobs:
   build:

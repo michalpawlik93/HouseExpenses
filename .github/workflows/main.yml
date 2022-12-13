@@ -4,8 +4,10 @@ on:
   workflow_dispatch:
   push:
     branches:
-    - 'master/HouseExpenses/**'
-    - 'master/HouseExpenses.Data/**'
+    - master
+    paths:
+    - 'HouseExpenses/**'
+    - 'HouseExpenses.Data/**'
 jobs:
   publish:
     runs-on: ubuntu-latest
