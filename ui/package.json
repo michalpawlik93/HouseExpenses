@@ -1,5 +1,6 @@
 {
-  "name": "my-app",
+  "name": "homeexpenses",
+  "homepage": "https://michalpawlik93.github.io/homeexpenses",
   "version": "0.1.0",
   "private": true,
   "main": "index.tsx",
