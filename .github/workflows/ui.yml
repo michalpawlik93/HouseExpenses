@@ -6,7 +6,9 @@ on:
     - master
     paths:
     - 'ui/**'
-
+defaults:
+ run:
+  working-directory: ./ui
 jobs:
   build:
     name: Build
