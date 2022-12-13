@@ -1,7 +1,7 @@
 import React from 'react'
 
 const App: React.FC<any> = () => {
-  return <>Tests</>
+  return <>Test</>
 }
 
 export default App
