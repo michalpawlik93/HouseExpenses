@@ -1,10 +1,15 @@
-using HouseExpenses.Data.Repository;
+using HouseExpenses.Api.ExtensionMethods;
+using HouseExpenses.Data.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddDataStore();
+builder.Services.AddServices();
 
 var app = builder.Build();
+
+app.CreateDatabase();
 
 app.UseSwagger();
 app.UseSwaggerUI(options =>
@@ -14,7 +19,7 @@ app.UseSwaggerUI(options =>
 });
 app.UseHttpsRedirection();
 
-app.MapGet("/GetAllExpenses", () => TempClass.GetHelloWorld)
+app.MapGet("/GetAllExpenses", () => "Hello Wolr")
     .WithName("HelloWorld")
     .WithOpenApi();
 
