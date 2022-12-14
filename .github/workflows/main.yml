@@ -8,9 +8,6 @@ on:
     paths:
     - 'HouseExpenses/**'
     - 'HouseExpenses.Data/**'
-defaults:
- run:
-  working-directory: ./HouseExpenses
 jobs:
   publish:
     runs-on: ubuntu-latest
