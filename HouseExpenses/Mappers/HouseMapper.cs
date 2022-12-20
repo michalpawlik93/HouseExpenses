@@ -11,4 +11,11 @@ public static class HouseMapper
             Id = Guid.NewGuid(),
             Rooms = model.Rooms.Select(RoomMapper.MapToDao).ToList(),
         };
+
+    public static HouseDto MapToDto(HouseDao dao) =>
+        new()
+        {
+            Id = dao.Id,
+            Rooms = dao.Rooms.Select(RoomMapper.MapToDto).ToList(),
+        };
 }

@@ -1,10 +1,13 @@
 using FluentValidation;
 using HouseExpenses.Api.ExtensionMethods;
 using HouseExpenses.Api.Mappers;
+using HouseExpenses.Api.Middlewares;
 using HouseExpenses.Api.Models;
 using HouseExpenses.Api.Validators;
 using HouseExpenses.Data.Service;
 using HousExpenses.Domain.Exceptions;
+using Microsoft.Azure.Cosmos.Serialization.HybridRow;
+using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
@@ -25,14 +28,23 @@ app.UseSwaggerUI(options =>
 });
 app.UseHttpsRedirection();
 
+app.UseExceptionHandler(exceptionHandlerApp
+    => exceptionHandlerApp.UseExceptionHandlerMiddleware());
+
+
 app.MapGet("/expenses/getAll", async (IExpensesService expensesService) =>
-    Results.Ok(await expensesService.GetAllAsync()))
-        .WithName("Get All")
-        .WithOpenApi();
+{
+    var results = await expensesService.GetAllAsync();
+    var serviceResponse = new ServiceResponse<IEnumerable<ExpenseDto>> { Data = results.Select(ExpenseMapper.MapToDto) };
+    return Results.Ok(serviceResponse);
+})
+    .WithName("Get All")
+    .WithOpenApi();
 
 app.MapPost("/expenses", async (CreateExpenseDto model, IExpensesService repo) =>
 {
-    await repo.AddExpenseAsync(CreateExpenseMapper.MapToDao(model));
+    await repo.AddExpenseAsync(ExpenseMapper.MapToDao(model));
+    return Results.Accepted(null, new ServiceResponse());
 })
     .AddEndpointFilter<ValidatorFilter<CreateExpenseDto>>()
     .WithName("Add Exepense")
@@ -40,14 +52,8 @@ app.MapPost("/expenses", async (CreateExpenseDto model, IExpensesService repo) =
 
 app.MapDelete("/expenses/{id}", async (Guid id, IExpensesService repo) =>
 {
-    try {
-        await repo.RemoveExpenseAsync(id);
-        return Results.Ok(id);
-    }
-    catch(ResourceNotFoundException)
-    {
-        return Results.NotFound();//move to midleware or filter
-    }
+    await repo.RemoveExpenseAsync(id);
+    return Results.Accepted(null, new ServiceResponse());
 });
 
 app.Run();

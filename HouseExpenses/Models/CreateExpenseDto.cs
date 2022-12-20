@@ -2,10 +2,13 @@
 
 namespace HouseExpenses.Api.Models;
 
+/// <summary>
+/// DTO representing data needed to create expense
+/// </summary>
 public class CreateExpenseDto
 {
     /// <summary>
-    /// DTO representing data needed to create expense
+    /// Name
     /// </summary>
     public string Name { get; set; }
     /// <summary>

@@ -12,5 +12,13 @@ namespace HouseExpenses.Api.Mappers
                 YDimension = model.YDimension,
                 HDimension = model.HDimension,
             };
+
+        public static RoomDto MapToDto(RoomDao dao) =>
+            new()
+            {
+                XDimension = dao.XDimension,
+                YDimension = dao.YDimension,
+                HDimension = dao.HDimension,
+            };
     }
 }
