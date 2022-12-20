@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="7.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.4.0" />
@@ -16,10 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HouseExpenses.Data\HouseExpenses.Data.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

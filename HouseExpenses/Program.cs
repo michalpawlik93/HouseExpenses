@@ -1,12 +1,17 @@
+using FluentValidation;
 using HouseExpenses.Api.ExtensionMethods;
-using HouseExpenses.Data.Models;
+using HouseExpenses.Api.Mappers;
+using HouseExpenses.Api.Models;
+using HouseExpenses.Api.Validators;
 using HouseExpenses.Data.Service;
+using HousExpenses.Domain.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDataStore();
+builder.Services.AddDataStore(builder.Environment);
 builder.Services.AddServices();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 var app = builder.Build();
 
@@ -20,19 +25,29 @@ app.UseSwaggerUI(options =>
 });
 app.UseHttpsRedirection();
 
-app.MapGet("/expenses/getAll", async (IExpensesService expensesService) => 
-Results.Ok(await expensesService.GetAllAsync()))
-    .WithName("HelloWorld")
+app.MapGet("/expenses/getAll", async (IExpensesService expensesService) =>
+    Results.Ok(await expensesService.GetAllAsync()))
+        .WithName("Get All")
+        .WithOpenApi();
+
+app.MapPost("/expenses", async (CreateExpenseDto model, IExpensesService repo) =>
+{
+    await repo.AddExpenseAsync(CreateExpenseMapper.MapToDao(model));
+})
+    .AddEndpointFilter<ValidatorFilter<CreateExpenseDto>>()
+    .WithName("Add Exepense")
     .WithOpenApi();
 
-app.MapPost("/expenses", async (ExpenseDao model, IExpensesService repo) =>
+app.MapDelete("/expenses/{id}", async (Guid id, IExpensesService repo) =>
 {
-    if(model == null)
-    {
-        await repo.AddExpenseAsync(new ExpenseDao { Id = Guid.NewGuid(), Name = "Foundation", Created = DateTime.UtcNow });     
+    try {
+        await repo.RemoveExpenseAsync(id);
+        return Results.Ok(id);
     }
-    await repo.AddExpenseAsync(model);
+    catch(ResourceNotFoundException)
+    {
+        return Results.NotFound();//move to midleware or filter
+    }
 });
-
 
 app.Run();

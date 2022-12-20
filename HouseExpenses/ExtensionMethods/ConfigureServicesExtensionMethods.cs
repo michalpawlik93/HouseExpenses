@@ -1,8 +1,10 @@
 ﻿using HouseExpenses.Data;
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.EntityFrameworkCore;
-using HouseExpenses.Data.Service;
 using HouseExpenses.Data.Repository;
+using HouseExpenses.Data.Service;
+using Microsoft.Azure.Cosmos;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HouseExpenses.Api.ExtensionMethods
 {
@@ -12,13 +14,37 @@ namespace HouseExpenses.Api.ExtensionMethods
     [ExcludeFromCodeCoverage]
     public static class ConfigureServicesExtensionMethods
     {
-        public static void AddDataStore(this IServiceCollection services) 
+        public static void AddDataStore(this IServiceCollection services, IWebHostEnvironment env) 
         {
-            //move conection string to settings
+            //https://github.com/Azure-Samples/cosmos-db-nosql-dotnet-samples
+            var accountKey = Environment.GetEnvironmentVariable("COSMOS_KEY");
+            var accountEndpoint = Environment.GetEnvironmentVariable("COSMOS_ENDPOINT");
+            var connectionString = $"AccountEndpoint={accountEndpoint};AccountKey={accountKey}";
             services.AddDbContext<ExpenseStoreContext>(options =>
                 options.UseCosmos(
-                    connectionString: "AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
-                    databaseName: "ExpenseStoreDb"));
+                    connectionString: connectionString,
+                    databaseName: "ExpenseStoreDb",
+                    (clientOptions) => {
+                        if (env.IsDevelopment())
+                        {
+                            SwitchOffCertificate(clientOptions);
+                        }
+                    }));
+        }
+
+        public static void SwitchOffCertificate(CosmosDbContextOptionsBuilder clientOptions)
+        {
+            clientOptions.HttpClientFactory(() => {
+#pragma warning disable S4830 // Server certificates should be verified during SSL/TLS connections
+                HttpMessageHandler httpMessageHandler = new HttpClientHandler()
+                {
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                };
+#pragma warning restore S4830 // Server certificates should be verified during SSL/TLS connections
+
+                return new HttpClient(httpMessageHandler);
+            });
+            clientOptions.ConnectionMode(ConnectionMode.Gateway);
         }
 
         public static void AddServices(this IServiceCollection services)

@@ -9,4 +9,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="7.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HousExpenses.Domain\HousExpenses.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

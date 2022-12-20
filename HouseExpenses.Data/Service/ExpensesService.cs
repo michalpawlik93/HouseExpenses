@@ -1,5 +1,6 @@
 ﻿using HouseExpenses.Data.Models;
 using HouseExpenses.Data.Service;
+using HousExpenses.Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -45,7 +46,24 @@ public class ExpensesService : IExpensesService
         }
         catch (Exception ex)
         {
-            _logger.LogError(default, ex, "Error when accessing database.");
+            _logger.LogError(default, ex, "Error when adding to database.");
+            throw;
+        }
+    }
+
+    public async Task RemoveExpenseAsync(Guid id)
+    {
+        try
+        {
+            var expense = await _context.Expenses.FindAsync(id);
+            _ = expense ?? throw new ResourceNotFoundException("Expnese not found");
+            _context.Expenses.Remove(expense);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation($"Expanse created.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(default, ex, "Error when removing from database.");
             throw;
         }
     }

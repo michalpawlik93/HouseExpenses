@@ -8,8 +8,23 @@ public class ExpenseStoreContext : DbContext
     public ExpenseStoreContext(DbContextOptions<ExpenseStoreContext> options)
        : base(options) { }
     public DbSet<ExpenseDao> Expenses { get; set; }
-    public DbSet<JobDao> Jobs { get; set; }
-    public DbSet<JobUnitDao> JobUnits { get; set; }
+    public DbSet<HouseDao> House { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ExpenseDao>()
+            .ToContainer("ExpanseContainer")
+            .HasPartitionKey(e => e.Id);
+        modelBuilder.Entity<ExpenseDao>()
+            .OwnsMany(e => e.Jobs)
+            .OwnsMany(e=>e.JobsUnits);
+
+        modelBuilder.Entity<HouseDao>()
+            .ToContainer("HouseContainer")
+            .HasPartitionKey(e => e.Id);
+        modelBuilder.Entity<HouseDao>()
+             .OwnsMany(e => e.Rooms);
+    }
 }
 
 //https://www.youtube.com/watch?v=CncakcC-Shc
