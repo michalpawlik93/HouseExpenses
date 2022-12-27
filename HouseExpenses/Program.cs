@@ -5,9 +5,6 @@ using HouseExpenses.Api.Middlewares;
 using HouseExpenses.Api.Models;
 using HouseExpenses.Api.Validators;
 using HouseExpenses.Data.Service;
-using HousExpenses.Domain.Exceptions;
-using Microsoft.Azure.Cosmos.Serialization.HybridRow;
-using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();

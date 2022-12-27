@@ -1,0 +1,87 @@
+using Amazon;
+using Amazon.StepFunctions;
+using Amazon.StepFunctions.Model;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using System.Text.Json;
+
+namespace Fenergo.Nebula.DataProtection.Common.Common
+{
+    [ExcludeFromCodeCoverage]
+    public abstract class BaseStepFunctionInvoker : IDisposable
+    {
+        public readonly ILogger<BaseStepFunctionInvoker> Logger;
+        public readonly IAmazonStepFunctions Client;
+        public readonly IOptions<StepFunctionOptions> Options;
+        private readonly string _region;
+        private readonly string _serviceUrl;
+        private bool _isDisposed;
+
+        protected BaseStepFunctionInvoker(ILogger<BaseStepFunctionInvoker> logger,
+            IOptions<StepFunctionOptions> options)
+        {
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _ = options?.Value ?? throw new ArgumentNullException(nameof(options));
+            _region = options.Value.Region ?? throw new ArgumentNullException(nameof(options));
+            _serviceUrl = options.Value.ServiceUrl;
+            Client = CreateClient();
+        }
+
+        protected async Task InvokeStepFunction<T>(string stepFunctionArn, T request, CancellationToken cancellationToken = default)
+        {
+            var payload = JsonSerializer.Serialize(request);
+            var stepFunctionRequest = new StartExecutionRequest
+            {
+                Input = payload,
+                StateMachineArn = stepFunctionArn,
+            };
+
+            var invokeResponse = await Client.StartExecutionAsync(stepFunctionRequest, cancellationToken);
+            if (invokeResponse.HttpStatusCode == HttpStatusCode.OK)
+            {
+                return;
+            }
+            throw new StepFunctionInvokerException(
+                    $"Failed to invoke {stepFunctionArn}. Response: {payload}",
+                    (int)invokeResponse.HttpStatusCode);
+        }
+
+        public void Dispose() => Dispose(true);
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    Client.Dispose();
+                }
+
+                _isDisposed = true;
+            }
+        }
+
+        private IAmazonStepFunctions CreateClient()
+        {
+            return string.IsNullOrWhiteSpace(_serviceUrl)
+                ? CreateAwsClient()
+                : CreateLocalClient();
+        }
+
+        private IAmazonStepFunctions CreateAwsClient()
+        {
+            Logger.LogInformation("Creating AWS client");
+            return !string.IsNullOrWhiteSpace(_region)
+                ? new AmazonStepFunctionsClient(RegionEndpoint.GetBySystemName(_region))
+                : new AmazonStepFunctionsClient();
+        }
+
+        private IAmazonStepFunctions CreateLocalClient()
+        {
+            Logger.LogInformation("Creating local client");
+            return new AmazonStepFunctionsClient(new AmazonStepFunctionsConfig { ServiceURL = _serviceUrl });
+        }
+    }
+}

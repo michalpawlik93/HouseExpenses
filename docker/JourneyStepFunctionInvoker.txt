@@ -1,0 +1,55 @@
+using Fenergo.Nebula.DataProtection.Common;
+using Fenergo.Nebula.DataProtection.Common.Common;
+using Fenergo.Nebula.Platform.Telemetry;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Fenergo.Nebula.DataProtection.Command.Application.Services.Journey
+{
+    public sealed class JourneyStepFunctionInvoker : BaseStepFunctionInvoker
+    {
+        private readonly ITelemetryTracer _telemetryTracer;
+
+        public JourneyStepFunctionInvoker(
+            ITelemetryTracer telemetryTracer,
+            ILogger<BaseStepFunctionInvoker> logger,
+            IOptions<StepFunctionOptions> options) : base(logger, options)
+        {
+            _telemetryTracer = telemetryTracer ?? throw new ArgumentNullException(nameof(telemetryTracer));
+            _ = options.Value.TriggerOffboardingSFArn ?? throw new ArgumentNullException(nameof(options));
+        }
+
+        public Task TriggerOffboardingJourneySF(TriggerOffboardingJourneySFRequest request, CancellationToken cancellationToken)
+        {
+            _telemetryTracer.BeginSubsegment("Trigger Offboarding Journey Instance");
+            _telemetryTracer.AddAnnotation("Tenant", request.Tenant);
+            _telemetryTracer.AddAnnotation("EntityId", request.EntityId);
+
+            try
+            {
+                return InvokeStepFunction(Options.Value.TriggerOffboardingSFArn, request, cancellationToken);
+            }
+            catch (LambdaInvokerException ex)
+            {
+                Logger.LogError("JourneyStepFunctionInvoker TriggerOffboardingJourneySF Error Status Code: {ex.StatusCode}, FunctionErrorError: {ex.FunctionError}", ex.StatusCode, ex.FunctionError);
+                _telemetryTracer.AddException(ex);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"JourneyStepFunctionInvoker TriggerOffboardingJourneySF Error");
+                _telemetryTracer.AddException(ex);
+                throw;
+            }
+            finally
+            {
+                _telemetryTracer.EndSubsegment();
+            }
+        }
+
+    }
+}
+https://dev.azure.com/FenergoProduct/Nebula/_search?action=contents&text=TriggerJourneyInstances&type=code&lp=code-Project&filters=ProjectFilters%7BNebula%7DRepositoryFilters%7BFenergo.Nebula.BusinessProcess%7D&pageSize=25&result=DefaultCollection/Nebula/Fenergo.Nebula.BusinessProcess/GBmaster//iac/BusinessProcesses/UpdateEntity.ts

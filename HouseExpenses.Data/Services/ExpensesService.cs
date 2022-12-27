@@ -1,10 +1,10 @@
 ﻿using HouseExpenses.Data.Models;
-using HouseExpenses.Data.Service;
+using HouseExpenses.Data.Services.Interfaces;
 using HousExpenses.Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace HouseExpenses.Data.Repository;
+namespace HouseExpenses.Data.Services;
 
 public class ExpensesService : IExpensesService
 {

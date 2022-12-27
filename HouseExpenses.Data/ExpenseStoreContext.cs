@@ -13,15 +13,22 @@ public class ExpenseStoreContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ExpenseDao>()
+            .HasNoDiscriminator()//one type stored in the table, so there is no need for a discriminator
             .ToContainer("ExpanseContainer")
-            .HasPartitionKey(e => e.Id);
+            .HasPartitionKey(e => e.Id)
+            .HasKey(e => e.Id);
+
+
         modelBuilder.Entity<ExpenseDao>()
             .OwnsMany(e => e.Jobs)
             .OwnsMany(e=>e.JobsUnits);
 
         modelBuilder.Entity<HouseDao>()
+            .HasNoDiscriminator()//one type stored in the table, so there is no need for a discriminator
             .ToContainer("HouseContainer")
-            .HasPartitionKey(e => e.Id);
+            .HasPartitionKey(e => e.Id)
+            .HasKey(e => e.Id);
+
         modelBuilder.Entity<HouseDao>()
              .OwnsMany(e => e.Rooms);
     }

@@ -1,6 +1,6 @@
 ﻿using HouseExpenses.Data.Models;
 
-namespace HouseExpenses.Data.Service;
+namespace HouseExpenses.Data.Services.Interfaces;
 
 public interface IExpensesService
 {

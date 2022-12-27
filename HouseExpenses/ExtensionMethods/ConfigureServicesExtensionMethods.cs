@@ -49,7 +49,7 @@ namespace HouseExpenses.Api.ExtensionMethods
 
         public static void AddServices(this IServiceCollection services)
         {
-            services.AddTransient<IExpensesService, ExpensesService>();
+            services.AddScoped<IExpensesService, ExpensesService>();
         }
     }
 }
