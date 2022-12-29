@@ -1,13 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './assets/index.css'
-import App from './App'
+import Root from './components/root.component'
 
 const rootElement = document.getElementById('root') as Element
 const root = ReactDOM.createRoot(rootElement)
 
 root.render(
   <React.StrictMode>
-    <App />
+    <Root />
   </React.StrictMode>
 )
