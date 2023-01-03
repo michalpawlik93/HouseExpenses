@@ -1,5 +1,5 @@
 import {
-  Theme,
+  Theme as MuiTheme,
   createTheme as createMuiTheme,
   buttonClasses,
   inputLabelClasses,
@@ -20,8 +20,14 @@ import {
   switchClasses,
 } from '@mui/material'
 import { createStandardPalette } from './standardPallete'
+import '@emotion/react'
 
-export const createTheme = (): Theme => {
+declare module '@emotion/react' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface Theme extends MuiTheme {}
+}
+
+export const createTheme = (): MuiTheme => {
   const palette = createStandardPalette()
 
   return createMuiTheme({

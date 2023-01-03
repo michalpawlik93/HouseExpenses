@@ -15,6 +15,7 @@ declare module '@mui/material/styles/createPalette' {
     chipColor: string
     inputBackgorund: string
     hubProgressBarHeadingColor: string
+    brandBlue: string
   }
 }
 
@@ -102,6 +103,7 @@ export const createStandardPalette = (): GeneralPaletteOptions => {
       chipColor: uxStandardColors.backgroundChipGrey,
       inputBackgorund: uxStandardColors.inputSelectionStatesFieldDefaultGrey,
       hubProgressBarHeadingColor: uxStandardColors.backgroundDarkGrey,
+      brandBlue: uxStandardColors.brandBlue,
     },
   }
 }
