@@ -1,6 +1,7 @@
 ﻿using HouseExpenses.Data;
-using HouseExpenses.Data.Repository;
-using HouseExpenses.Data.Service;
+using HouseExpenses.Data.Configuration;
+using HouseExpenses.Data.Services;
+using HouseExpenses.Data.Services.Interfaces;
 using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -14,16 +15,22 @@ namespace HouseExpenses.Api.ExtensionMethods
     [ExcludeFromCodeCoverage]
     public static class ConfigureServicesExtensionMethods
     {
+        public static void AddConfiguration(this IServiceCollection services)
+        {
+            services.Configure<CosmosDbSettings>(options => ConfigurationExtension.Configuration.GetSection("CosmosDbSettings").Bind(options));
+        }
+
         public static void AddDataStore(this IServiceCollection services, IWebHostEnvironment env) 
         {
-            //https://github.com/Azure-Samples/cosmos-db-nosql-dotnet-samples
             var accountKey = Environment.GetEnvironmentVariable("COSMOS_KEY");
             var accountEndpoint = Environment.GetEnvironmentVariable("COSMOS_ENDPOINT");
+            var configurationSection = ConfigurationExtension.Configuration.GetSection("CosmosDbSettings");
+            var databaseName = configurationSection["DatabaseName"];
             var connectionString = $"AccountEndpoint={accountEndpoint};AccountKey={accountKey}";
             services.AddDbContext<ExpenseStoreContext>(options =>
                 options.UseCosmos(
                     connectionString: connectionString,
-                    databaseName: "ExpenseStoreDb",
+                    databaseName,
                     (clientOptions) => {
                         if (env.IsDevelopment())
                         {

@@ -1,4 +1,4 @@
-﻿using HouseExpenses.Data.Service;
+﻿using HouseExpenses.Data.Services.Interfaces;
 
 namespace HouseExpenses.Api.ExtensionMethods;
 

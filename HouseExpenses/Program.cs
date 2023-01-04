@@ -4,7 +4,7 @@ using HouseExpenses.Api.Mappers;
 using HouseExpenses.Api.Middlewares;
 using HouseExpenses.Api.Models;
 using HouseExpenses.Api.Validators;
-using HouseExpenses.Data.Service;
+using HouseExpenses.Data.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
@@ -38,18 +38,18 @@ app.MapGet("/expenses/getAll", async (IExpensesService expensesService) =>
     .WithName("Get All")
     .WithOpenApi();
 
-app.MapPost("/expenses", async (CreateExpenseDto model, IExpensesService repo) =>
+app.MapPost("/expenses", async (CreateExpenseDto model, IExpensesService expensesService) =>
 {
-    await repo.AddExpenseAsync(ExpenseMapper.MapToDao(model));
+    await expensesService.AddExpenseAsync(ExpenseMapper.MapToDao(model));
     return Results.Accepted(null, new ServiceResponse());
 })
     .AddEndpointFilter<ValidatorFilter<CreateExpenseDto>>()
     .WithName("Add Exepense")
     .WithOpenApi();
 
-app.MapDelete("/expenses/{id}", async (Guid id, IExpensesService repo) =>
+app.MapDelete("/expenses/{id}", async (Guid id, IExpensesService expensesService) =>
 {
-    await repo.RemoveExpenseAsync(id);
+    await expensesService.RemoveExpenseAsync(id);
     return Results.Accepted(null, new ServiceResponse());
 });
 

@@ -1,4 +1,5 @@
-﻿using HouseExpenses.Data.Models;
+﻿using HouseExpenses.Data.Configuration;
+using HouseExpenses.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HouseExpenses.Data;
@@ -14,18 +15,17 @@ public class ExpenseStoreContext : DbContext
     {
         modelBuilder.Entity<ExpenseDao>()
             .HasNoDiscriminator()//one type stored in the table, so there is no need for a discriminator
-            .ToContainer("ExpanseContainer")
+            .ToContainer(CosmosDbContainers.EXPENSE_CONTAINER)
             .HasPartitionKey(e => e.Id)
             .HasKey(e => e.Id);
 
-
         modelBuilder.Entity<ExpenseDao>()
             .OwnsMany(e => e.Jobs)
-            .OwnsMany(e=>e.JobsUnits);
+            .OwnsMany(e => e.JobsUnits);
 
         modelBuilder.Entity<HouseDao>()
             .HasNoDiscriminator()//one type stored in the table, so there is no need for a discriminator
-            .ToContainer("HouseContainer")
+            .ToContainer(CosmosDbContainers.HOUSE_CONTAINER)
             .HasPartitionKey(e => e.Id)
             .HasKey(e => e.Id);
 

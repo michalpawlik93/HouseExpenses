@@ -6,6 +6,9 @@ using Microsoft.Extensions.Logging;
 
 namespace HouseExpenses.Data.Services;
 
+/// <summary>
+/// EntityFramework Service
+/// </summary>
 public class ExpensesService : IExpensesService
 {
     private readonly ILogger _logger;
