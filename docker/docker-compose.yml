@@ -15,3 +15,23 @@ services:
        - 10252:10252 
        - 10253:10253 
        - 10254:10254
+  azure.eventGrid:
+    image: pmcilreavy/azureeventgridsimulator:latest
+    container_name: azure.eventGrid
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/aegs/azureEventGridSimulator.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=Y0urSup3rCrypt1cPa55w0rd!
+      - AEGS_Topics__0__name=HouseTopic
+      - AEGS_Topics__0__port=60101
+      - AEGS_Topics__0__key=TheLocal+DevelopmentKey=
+      - AEGS_Topics__0__subscribers__0__name=RequestCatcherSubscription
+      - AEGS_Topics__0__subscribers__0__endpoint=https://azureeventgridsimulator.requestcatcher.com/
+      - AEGS_Topics__0__subscribers__0__disableValidation=true
+      - AEGS_Topics__0__subscribers__1__name=AzureFunctionSubscription
+      - AEGS_Topics__0__subscribers__1__endpoint=http://localhost:7071/runtime/webhooks/EventGrid?functionName=UpdateExpensesOnHouseUpdate
+      - AEGS_Topics__0__subscribers__1__disableValidation=false
+    ports:
+      - "60101:60101"
+    volumes:
+      - ./docker:/aegs:ro
