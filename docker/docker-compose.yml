@@ -18,6 +18,8 @@ services:
   azure.eventGrid:
     image: pmcilreavy/azureeventgridsimulator:latest
     container_name: azure.eventGrid
+    volumes:
+      - ./docker:/aegs:ro
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/aegs/azureEventGridSimulator.pfx
@@ -29,9 +31,9 @@ services:
       - AEGS_Topics__0__subscribers__0__endpoint=https://azureeventgridsimulator.requestcatcher.com/
       - AEGS_Topics__0__subscribers__0__disableValidation=true
       - AEGS_Topics__0__subscribers__1__name=AzureFunctionSubscription
-      - AEGS_Topics__0__subscribers__1__endpoint=http://localhost:7071/runtime/webhooks/EventGrid?functionName=UpdateExpensesOnHouseUpdate
-      - AEGS_Topics__0__subscribers__1__disableValidation=false
+      - AEGS_Topics__0__subscribers__1__endpoint=http://host.docker.internal:7127/runtime/webhooks/EventGrid?functionName=UpdateExpensesOnHouseUpdate
+      - AEGS_Topics__0__subscribers__1__disableValidation=true
     ports:
       - "60101:60101"
-    volumes:
-      - ./docker:/aegs:ro
+volumes:
+  docker:

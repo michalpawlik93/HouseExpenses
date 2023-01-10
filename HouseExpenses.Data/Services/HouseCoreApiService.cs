@@ -3,6 +3,7 @@ using HouseExpenses.Data.Models;
 using HouseExpenses.Data.Services.Interfaces;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace HouseExpenses.Data.Services;
 
@@ -11,9 +12,10 @@ public class HouseCoreApiService : IHouseCoreApiService
     private readonly Container _container;
     private readonly ILogger _logger;
     public HouseCoreApiService(CosmosClient cosmosDbClient, ILogger<ExpensesCoreApiService> logger,
-        string databaseName)
+         IOptions<CosmosDbSettings> dbSettings)
     {
-        _container = cosmosDbClient.GetContainer(databaseName, CosmosDbContainers.HOUSE_CONTAINER);
+        _ = dbSettings.Value.DatabaseName ?? throw new ArgumentNullException(nameof(dbSettings));
+        _container = cosmosDbClient.GetContainer(dbSettings.Value.DatabaseName, CosmosDbContainers.HOUSE_CONTAINER);
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 

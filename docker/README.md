@@ -18,3 +18,14 @@ Select Trusted Root Certification Authority and click Ok, then Next and Finish.
 
 link:
 https://libertus.dev/posts/connect-to-cosmosbd-emulator-on-docker/part1/#inst-cert
+
+# Azure function
+Test function with Postman:
+Url:http://localhost:7127/runtime/webhooks/EventGrid?functionName=UpdateExpensesOnHouseUpdate
+Header: {aeg-event-type:Notification}
+
+# Event Grid
+All subscribers have to be set up before event grid container is started.
+Test publisher with Postman:
+Utl:https://localhost:60102/api/events?api-version=2018-01-01
+Header: {aeg-event-type:Notification},{aeg-sas-key:TheLocal+DevelopmentKey=}

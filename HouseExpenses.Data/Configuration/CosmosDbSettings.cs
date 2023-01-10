@@ -1,3 +1,6 @@
 ﻿namespace HouseExpenses.Data.Configuration;
 
-public record CosmosDbSettings(string DatabaseName);
+public class CosmosDbSettings
+{
+    public string DatabaseName { get; set; }
+};
